@@ -39,7 +39,11 @@
 
         /* --- CSS Reset --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
+        
+        html, body { 
+            scroll-behavior: smooth; 
+            overflow-x: hidden; /* Prevents accidental horizontal scrolling on mobile */
+        }
 
         /* --- Base Typography & Background --- */
         body {
@@ -93,7 +97,7 @@
         .badge i { margin-left: 6px; }
 
         .hero h1 {
-            font-size: clamp(36px, 8vw, 72px);
+            font-size: clamp(32px, 8vw, 72px);
             font-weight: 900;
             letter-spacing: -2px;
             line-height: 1.2;
@@ -111,7 +115,7 @@
             max-width: 700px;
             margin: 0 auto;
             color: var(--text-muted);
-            font-size: clamp(16px, 4vw, 20px);
+            font-size: clamp(15px, 4vw, 20px);
             animation: reveal 1s ease forwards;
         }
 
@@ -129,7 +133,7 @@
 
         .golden-rule strong { 
             color: #b45309; 
-            font-size: 20px;
+            font-size: clamp(16px, 4vw, 20px);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -143,6 +147,7 @@
             margin: 40px 0;
             display: flex;
             justify-content: center;
+            width: 100%;
         }
 
         .toc-inner {
@@ -151,14 +156,19 @@
             padding: 12px;
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255,255,255,0.5);
             border-radius: 100px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            
+            /* Horizontal Scroll Setup */
             overflow-x: auto;
             max-width: 100%;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
         }
         
-        .toc-inner::-webkit-scrollbar { display: none; }
+        .toc-inner::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
 
         .toc a {
             text-decoration: none;
@@ -167,7 +177,8 @@
             font-size: 14px;
             padding: 8px 20px;
             border-radius: 100px;
-            white-space: nowrap;
+            white-space: nowrap; /* Forces text to stay in one line */
+            flex-shrink: 0; /* Prevents items from shrinking in flexbox */
             transition: var(--transition);
         }
 
@@ -204,10 +215,11 @@
             font-weight: 900;
             box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
             transform: rotate(-5deg);
+            flex-shrink: 0;
         }
 
         .level-title {
-            font-size: 32px;
+            font-size: clamp(22px, 5vw, 32px);
             font-weight: 900;
         }
 
@@ -237,13 +249,14 @@
         }
 
         .trick-info h3 {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 900;
             margin-bottom: 15px;
             color: var(--primary);
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
         
         .trick-info h3 span {
@@ -252,7 +265,7 @@
             border-radius: 8px;
             font-family: "Fira Code", monospace;
             color: var(--accent);
-            font-size: 18px;
+            font-size: 16px;
         }
 
         .trick-info p {
@@ -275,11 +288,12 @@
             border-radius: 12px;
             padding: 15px 20px;
             font-family: "Fira Code", monospace;
-            font-size: 15px;
+            font-size: 14px;
             direction: ltr;
             text-align: left;
             position: relative;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .code-box::before {
@@ -300,6 +314,7 @@
             color: var(--emmet-color);
             font-weight: 700;
             border-left: 4px solid var(--emmet-color);
+            white-space: nowrap; /* Prevents formula from wrapping */
         }
 
         .output-code {
@@ -339,7 +354,7 @@
         }
 
         .boss-fight h2 {
-            font-size: 40px;
+            font-size: clamp(28px, 6vw, 40px);
             font-weight: 900;
             color: #fbbf24;
             margin-bottom: 20px;
@@ -350,7 +365,7 @@
         .boss-fight h2 i { margin-left: 10px; color: #f87171; }
 
         .boss-fight p {
-            font-size: 18px;
+            font-size: clamp(15px, 4vw, 18px);
             color: #cbd5e1;
             margin-bottom: 30px;
             max-width: 600px;
@@ -367,12 +382,16 @@
             color: #34d399;
             direction: ltr;
             text-align: left;
-            word-wrap: break-word;
-            font-size: 16px;
+            font-size: 15px;
             border: 2px dashed rgba(255,255,255,0.2);
             margin-bottom: 20px;
             position: relative;
             z-index: 2;
+            
+            /* Enable horizontal scroll instead of weird wrapping */
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* --- Footer --- */
@@ -388,16 +407,37 @@
 
         /* --- Media Queries (Responsive Design) --- */
         @media (max-width: 900px) {
-            .trick-card { grid-template-columns: 1fr; gap: 20px; }
-            .hero h1 { font-size: 40px; }
-            .boss-fight { padding: 30px 20px; }
-            .boss-input { font-size: 13px; }
+            .trick-card { 
+                grid-template-columns: 1fr; 
+                gap: 20px; 
+            }
         }
         
         @media (max-width: 600px) {
-            .toc-inner { border-radius: 16px; flex-wrap: wrap; justify-content: center; }
-            .level-header { flex-direction: column; text-align: center; gap: 10px; }
-            .level-badge { transform: rotate(0); }
+            .container { width: calc(100% - 24px); }
+            
+            .hero { padding: 60px 0 40px; }
+            
+            .toc-inner { border-radius: 16px; padding: 10px; }
+            .toc a { padding: 6px 16px; font-size: 13px; }
+            
+            .level-section { margin-bottom: 60px; scroll-margin-top: 100px; }
+            
+            .level-header { gap: 15px; margin-bottom: 25px; }
+            .level-badge { 
+                width: 45px; 
+                height: 45px; 
+                font-size: 18px; 
+                border-radius: 12px; 
+                transform: rotate(-3deg);
+            }
+            
+            .trick-card { padding: 20px; border-radius: var(--radius-md); }
+            .trick-demo { padding: 10px; }
+            .code-box { padding: 12px 15px; font-size: 13px; }
+            
+            .boss-fight { padding: 30px 20px; border-radius: var(--radius-md); }
+            .boss-input { padding: 15px; font-size: 13px; }
         }
 
         /* --- Syntax Highlighting Colors --- */
